@@ -11,7 +11,7 @@
 ## 现有代码如何复用
 
 - `core.py`：工时、薪资、手动补录和睡眠规则的唯一计算来源。
-- `store.py`：继续使用当前数据库；沿用 `~/Library/Application Support/HourlyRateMVP`，不因换成应用而另建空数据库。
+- `store.py`：继续使用当前数据库；沿用 `~/Library/Application Support/HourlyRate`，不因换成应用而另建空数据库。
 - `vpn.py`：保留只读检测接口；不同 VPN 可通过系统适配器或本机脚本扩展。
 - `power.py`：初版继续接收系统睡眠/唤醒事件；若未来换成原生监听，需替换现有监听，避免双重记录。
 - `launcher.py`、`instance.py`：复用单实例控制与本机服务复用，菜单栏应用和脚本同时打开也不能启动两份采集。

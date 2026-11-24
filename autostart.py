@@ -69,7 +69,9 @@ class LoginItem:
     def _matches(self, job):
         args = job["ProgramArguments"]
         return (args[0] == self.executable and args[1] == str(self.root / "app.py")
-                and args[3] == str(self.directory) and args[5] == str(self.port)
+                # Legacy login items can retain a compatibility symlink to
+                # the migrated directory; they still target the same data.
+                and Path(args[3]).expanduser().resolve() == self.directory and args[5] == str(self.port)
                 and job.get("RunAtLoad") is True and job.get("WorkingDirectory") == str(self.root)
                 and not job.get("Disabled", False))
 

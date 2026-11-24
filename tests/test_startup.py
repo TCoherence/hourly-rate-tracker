@@ -91,6 +91,11 @@ class BrowserSelectionTests(unittest.TestCase):
 class StartupTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
+        # Startup guards default paths even for custom data directories. Keep
+        # both the guard and every spawned child inside this isolated test home.
+        self.test_home = patch.dict(os.environ, {'HOME': self.temporary.name})
+        self.test_home.start()
+        self.addCleanup(self.test_home.stop)
         self.directory = Path(self.temporary.name) / 'data'
         self.processes = []
         self.gate = None

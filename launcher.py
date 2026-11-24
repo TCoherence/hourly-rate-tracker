@@ -11,9 +11,10 @@ import urllib.request
 import webbrowser
 
 from instance import AlreadyRunning, InstanceLock, is_locked
+from data_directory import DirectoryError, locked_data_directory
 
 ROOT = Path(__file__).resolve().parent
-DATA = Path.home() / "Library" / "Application Support" / "HourlyRateMVP"
+DATA = Path.home() / "Library" / "Application Support" / "HourlyRate"
 # Ignore system proxy settings so even readiness checks stay on this Mac.
 LOCAL = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 
@@ -120,7 +121,7 @@ def open_browser(access, browser_app=None):
 def main():
     parser = argparse.ArgumentParser(description="打开或停止本机时薪工具")
     parser.add_argument("--stop", action="store_true")
-    parser.add_argument("--data-dir", type=Path, default=DATA)
+    parser.add_argument("--data-dir", type=Path, default=None)
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--no-browser", action="store_true", help="启动服务，但不打开浏览器")
     parser.add_argument("--browser-app", metavar="APP", help="在指定 macOS 浏览器应用中打开本机入口")
@@ -130,16 +131,18 @@ def main():
     if args.browser_app is not None and (not args.browser_app.strip() or args.no_browser or args.stop):
         parser.error("--browser-app 需指定应用名称，且不能与 --no-browser 或 --stop 同用")
     os.umask(0o077)
-    directory = args.data_dir.expanduser().resolve()
     try:
         # Serialize launcher starts/stops so concurrent double-clicks reuse the
         # first service instead of launching competing child processes.
-        with InstanceLock(directory, name="launcher.lock", timeout=20):
+        with locked_data_directory(args.data_dir, name="launcher.lock", timeout=20) as directory_lock:
+            directory = directory_lock.directory
             if args.stop:
                 return stop(directory)
             access = start(directory, args.port)
     except AlreadyRunning:
         raise SystemExit("另一次启动或停止仍在进行，请稍后重试。") from None
+    except DirectoryError as error:
+        raise SystemExit(str(error)) from None
     if not args.no_browser:
         open_browser(access, args.browser_app)
     print("本机仪表盘已就绪；关闭浏览器后仍会记录。用 stop-hourly-rate.command 结束后台运行。")

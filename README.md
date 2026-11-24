@@ -70,7 +70,7 @@ AI 时代，工作变轻松了，还是同样的时间里干了更多事情？�
 
 ## 数据去哪儿了？
 
-默认路径：`~/Library/Application Support/HourlyRateMVP/`。
+默认路径：`~/Library/Application Support/HourlyRate/`。旧版数据目录会继续使用，直到你在停止服务后主动迁移；详情见[使用说明](docs/USER_GUIDE.md#数据目录迁移)。
 
 ```text
 VPN 状态 → 本机采样 → 本机 SQLite → 本机仪表盘

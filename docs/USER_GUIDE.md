@@ -81,7 +81,7 @@ python3 app.py --port 8765
 - 应用以当前用户身份直接运行脚本，不通过 shell 解析命令。**只配置自己信任的脚本**：脚本本身可执行任意该用户有权限的操作，应用不能保证第三方脚本只读。
 - 项目只定义状态协议；针对特定客户端的个人适配脚本自行保存在本机，不需要提交到项目。连接状态不代表目标内网服务可达；如需此信息，应另外独立检测。
 
-推荐将个人脚本保存在本机数据目录的 `adapters/` 下，避免与准备公开的项目源码放在一起。默认数据目录对应的建议路径为 `~/Library/Application Support/HourlyRateMVP/adapters/status`；使用 `--data-dir` 指定其他数据目录时，可使用该目录下的 `adapters/status`。设置页填写的是完整绝对路径；不要把路径里的 `~` 原样填入。脚本须由使用者自行准备并设置为可执行文件。
+推荐将个人脚本保存在本机数据目录的 `adapters/` 下，避免与准备公开的项目源码放在一起。默认数据目录对应的建议路径为 `~/Library/Application Support/HourlyRate/adapters/status`；使用 `--data-dir` 指定其他数据目录时，可使用该目录下的 `adapters/status`。设置页填写的是完整绝对路径；不要把路径里的 `~` 原样填入。脚本须由使用者自行准备并设置为可执行文件。
 
 此前使用项目目录下默认适配脚本的设置，会在读取时映射到当前数据目录中的 `adapters/status`；其他自行配置的脚本路径不会被改写。旧版来源标识可通过数据目录中私有的 `adapters/legacy-compat.json` 映射到通用来源；该文件由使用者管理，不属于项目源码。读取时不会为迁移改写历史数据。脚本本身需要存在于新位置，缺失或无法执行时状态显示为未知；无法识别旧来源时不会猜测连接状态。
 
@@ -114,7 +114,7 @@ printf 'unknown\n'
 在设置中选择并配置状态来源，打开计时开关并保存。点击页面顶部 **实时日志**，查看最近 30 条状态变化，页面每 3 秒刷新；日志接口受同样的本机认证保护，只返回经过筛选的状态事件。也可双击 **view-logs.command** 或在终端运行：
 
 ```sh
-tail -n 30 -F "$HOME/Library/Application Support/HourlyRateMVP/service.log"
+tail -n 30 -F "$HOME/Library/Application Support/HourlyRate/service.log"
 ```
 
 - 第一次采样和后续状态变化会立即打印，包含本机日期、时间、时区、状态来源、统计状态及状态说明。相同结果不会每 15 秒重复刷屏。
@@ -127,7 +127,7 @@ tail -n 30 -F "$HOME/Library/Application Support/HourlyRateMVP/service.log"
 
 数据流是 **只读 VPN 状态 → 本机 SQLite 待同步记录 → 每 60 秒发布本机汇总 → 本机浏览器**。
 
-- 默认目录：`~/Library/Application Support/HourlyRateMVP/`。
+- 默认目录：`~/Library/Application Support/HourlyRate/`（升级用户在迁移前仍使用旧目录）。
 - `records.sqlite3`：时间、连接/断开/未知状态、薪资和排班设置、所选系统服务标识、两态核对结果；手动补录单独存入 `manual_entries` 表，不伪造 VPN 采样。
 - `adapters/`：个人自行放置的本机状态脚本，与 SQLite 数据库及项目源码分开；脚本由使用者管理。
 - `access.json`：仅运行时存在的随机本机会话凭据；关闭服务后删除。
@@ -207,3 +207,10 @@ node --test tests/*.cjs
 - `instance.py`：按数据目录隔离的进程锁，避免重复采集与凭据覆盖。
 - `view-logs.command`：查看默认数据目录的实时状态日志。
 - `tests/`：仅用虚构数据的自动验证。
+
+
+## 数据目录迁移
+
+新安装默认使用 `~/Library/Application Support/HourlyRate/`。如果已经有旧版 `HourlyRateMVP` 数据，程序会继续使用旧目录，绝不会自动创建第二份记录。可在停止后台服务后，从项目目录运行 `python3 data_directory.py --migrate`；迁移只移动整个目录，不复制或重建 SQLite 文件，并保留旧路径作为兼容链接，让旧登录项和本机脚本路径继续可用。迁移期间不要同时启动旧版程序。
+
+若两个独立目录均已存在，程序会拒绝自动合并或覆盖，需先人工检查。若迁移中断，程序会阻止启动；停止服务并运行 `python3 data_directory.py --recover` 处理可安全确认的中断状态。遇到冲突时不要删除目录，请先检查并备份数据。

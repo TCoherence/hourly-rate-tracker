@@ -31,6 +31,7 @@ from exporting import (BackupTooLarge, MAX_RESTORE_BYTES, serialize_backup,
 from binary_backup import MAX_SQLITE_BYTES, snapshot_file, restore_sqlite_file
 from autostart import AutostartError, LoginItem
 from instance import AlreadyRunning, InstanceLock
+from data_directory import DirectoryError, locked_data_directory
 from store import Store
 from power import PowerMonitor
 from screen_monitor import DisplayMonitor
@@ -41,7 +42,7 @@ import vpn
 ROOT = Path(__file__).resolve().parent
 SYNC_SECONDS = 60
 POLL_SECONDS = 15
-DEFAULT_DATA = Path.home() / "Library" / "Application Support" / "HourlyRateMVP"
+DEFAULT_DATA = Path.home() / "Library" / "Application Support" / "HourlyRate"
 PERIODS = {"today", "week", "month", "quarter", "half", "year", "rolling_year"}
 COLLECTOR_LOG = logging.getLogger("hourly_rate.collector")
 
@@ -1041,7 +1042,7 @@ def _login_log_stream(directory):
 
 def main():
     parser = argparse.ArgumentParser(description="时薪温度计 · 仅在此 Mac 保存和处理数据")
-    parser.add_argument("--data-dir", default=str(DEFAULT_DATA))
+    parser.add_argument("--data-dir", default=None)
     parser.add_argument("--port", type=int, default=8765)
     args = parser.parse_args()
     if not 0 <= args.port <= 65535:
@@ -1052,7 +1053,7 @@ def main():
     try:
         # Both the directory lock and listening socket precede any SQLite access.
         # A rejected start must not append observations or publish pending rows.
-        with InstanceLock(args.data_dir) as instance:
+        with locked_data_directory(args.data_dir) as instance:
             login_log = None
             if os.environ.get("HOURLY_RATE_LOGIN_ITEM") == "1":
                 # launchd's diagnostic output is separate; status events append
@@ -1115,6 +1116,8 @@ def main():
                 login_log.close()
     except AlreadyRunning:
         raise SystemExit("此数据目录已有服务正在运行或启动；没有修改记录。请使用 start-hourly-rate.command 打开已有服务。") from None
+    except DirectoryError as error:
+        raise SystemExit(str(error)) from None
 
 
 if __name__ == "__main__":

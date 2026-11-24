@@ -93,6 +93,18 @@ class LoginItemTests(unittest.TestCase):
         self.assertFalse(other.status()['enabled'])
         self.assertIn('其他项目或数据目录', other.status()['message'])
 
+    def test_migrated_directory_alias_keeps_login_item_enabled(self):
+        self.assertTrue(self.item.set_enabled(True)['enabled'])
+        migrated = self.base / 'renamed-data'
+        self.data.rename(migrated)
+        self.data.symlink_to(migrated, target_is_directory=True)
+        migrated_item = LoginItem(migrated, 8765, **self.options)
+        self.assertTrue(migrated_item.status()['enabled'])
+        with migrated_item.path.open('rb') as stream:
+            job = plistlib.load(stream)
+        self.assertEqual(job['ProgramArguments'][3], str(self.data))
+        self.assertTrue(Path(job['StandardOutPath']).parent.samefile(migrated))
+
     def test_missing_program_or_nonautomatic_job_is_not_reported_enabled(self):
         self.item.set_enabled(True)
         script = self.item.root / 'app.py'

@@ -8,7 +8,10 @@ let destination = URL(fileURLWithPath: CommandLine.arguments.count > 1 ? Command
 func color(_ hex: UInt32) -> NSColor {
     NSColor(calibratedRed: CGFloat((hex >> 16) & 255) / 255, green: CGFloat((hex >> 8) & 255) / 255, blue: CGFloat(hex & 255) / 255, alpha: 1)
 }
-let paper = color(0xF5F3EE), ink = color(0x242421), muted = color(0x827D74), red = color(0xB53025), border = color(0xE6E0D5), card = color(0xFFFDF8)
+// Match the app's dark theme so the animation sits naturally beside the screenshot.
+let paper = color(0x201E1A), ink = color(0xEEE8DD), muted = color(0xAAA397)
+let red = color(0xF3A08B), border = color(0x484137), card = color(0x28251F)
+let highlight = color(0x362621), highlightBorder = color(0x69433B)
 func box(_ x: CGFloat, _ y: CGFloat, _ w: CGFloat, _ h: CGFloat, _ radius: CGFloat, _ fill: NSColor, _ stroke: NSColor? = nil) {
     let path = NSBezierPath(roundedRect: NSRect(x: x, y: y, width: w, height: h), xRadius: radius, yRadius: radius)
     fill.setFill(); path.fill()
@@ -29,7 +32,7 @@ func render(_ hours: Int) -> CGImage {
     box(57, 411, 846, 1, 0, border)
     txt("感觉这周没怎么加班？", 57, 357, 29, ink, .bold)
     txt("让数据帮你回忆一下。", 57, 327, 15, muted)
-    box(57, 111, 413, 185, 12, color(0xFAEDE8), color(0xF0D1C8))
+    box(57, 111, 413, 185, 12, highlight, highlightBorder)
     txt("实际时薪", 79, 257, 15, muted, .semibold)
     let rate = hours == 8 ? "$100" : "$80"
     txt(rate, 75, 181, 56, red, .bold); txt("/ 小时", 245, 186, 13, muted)

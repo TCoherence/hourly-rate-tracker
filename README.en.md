@@ -68,7 +68,7 @@ Viewed on its own, a non-working day with recorded work has **0** allocated dail
 
 ## Where does the data go?
 
-By default, it stays in `~/Library/Application Support/HourlyRateMVP/`:
+By default, it stays in `~/Library/Application Support/HourlyRate/`. Existing legacy data stays in its original directory until you stop the service and explicitly migrate it; see the [migration instructions (Chinese)](docs/USER_GUIDE.md#数据目录迁移):
 
 ```text
 VPN status → local samples → local SQLite → local dashboard
