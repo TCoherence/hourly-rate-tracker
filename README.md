@@ -20,7 +20,7 @@ AI 时代，工作变轻松了，还是同样的时间里干了更多事情？�
 
 *实际界面的演示模式，所有数字均为模拟数据。*
 
-想记录自己的时间？
+想记录自己的时间？先从 [GitHub 仓库](https://github.com/TCoherence/hourly-rate-tracker)选择 **Code → Download ZIP** 并解压，或运行 `git clone https://github.com/TCoherence/hourly-rate-tracker.git` 获取项目，然后：
 
 1. 准备 **macOS 和 Python 3.10+**。运行时只使用 Python 标准库，无需 `pip install`。
 2. 双击 **`start-hourly-rate.command`**，打开本机仪表盘。
@@ -116,4 +116,4 @@ python3 build_preview.py
 
 ## 项目状态
 
-这是一个仍在打磨的 side project，采用 [MIT 许可证](LICENSE)。[开源发布准备](OPEN_SOURCE.md)列出了发布前需要处理的隐私、打包和仓库事项。
+这是一个仍在打磨的 side project，采用 [MIT 许可证](LICENSE)。[发布与隐私检查](OPEN_SOURCE.md)列出了整理和发布时需要关注的事项。

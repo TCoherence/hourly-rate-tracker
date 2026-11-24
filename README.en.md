@@ -20,7 +20,7 @@ The interface supports English and Simplified Chinese. Choose a language at the 
 
 *The application in demo mode. All numbers are fictional.*
 
-Ready to track your own time?
+Ready to track your own time? From the [GitHub repository](https://github.com/TCoherence/hourly-rate-tracker), choose **Code → Download ZIP** and extract it, or run `git clone https://github.com/TCoherence/hourly-rate-tracker.git`. Then:
 
 1. Use **macOS and Python 3.10 or newer**. The application uses the Python standard library; no `pip install` is needed.
 2. Double-click **`start-hourly-rate.command`** to open your local dashboard.
@@ -104,7 +104,7 @@ node --test tests/*.cjs
 python3 build_preview.py
 ```
 
-Automated tests use temporary directories and mock status sources. They do not connect or disconnect your VPN. The more detailed [user and calculation guide](docs/USER_GUIDE.md), [contribution guide](CONTRIBUTING.md), [release-preparation checklist](OPEN_SOURCE.md) and [future ideas](TODO.md) are currently in Chinese.
+Automated tests use temporary directories and mock status sources. They do not connect or disconnect your VPN. The more detailed [user and calculation guide](docs/USER_GUIDE.md), [contribution guide](CONTRIBUTING.md), [release and privacy checklist](OPEN_SOURCE.md) and [future ideas](TODO.md) are currently in Chinese.
 
 ## What next?
 
@@ -114,4 +114,4 @@ These numbers are a way to observe your work and life. Your hourly rate is a ref
 
 ## Project status
 
-This side project is still being refined and uses the [MIT License](LICENSE). The [release-preparation checklist](OPEN_SOURCE.md) records privacy, packaging and repository tasks to resolve before publication.
+This side project is still being refined and uses the [MIT License](LICENSE). The [release and privacy checklist](OPEN_SOURCE.md) records considerations for preparing and publishing the project.
