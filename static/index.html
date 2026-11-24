@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="仅在本机记录的工作占用与时薪仪表盘。">
+  <title>工作占用 · 时薪仪表盘</title>
+  <link rel="icon" href="data:,">
+  <script src="/theme.js"></script>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/manual.css">
+  <link rel="stylesheet" href="/timeline.css">
+  <script src="/history-calendar.js" defer></script>
+  <script src="/app.js" defer></script>
+  <script src="/manual.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="工作占用首页"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span><span data-i18n-zh="工作占用" data-i18n-en="Time / Cost">工作占用</span><span class="brand-en">TIME / COST</span></span></a>
+      <div class="header-actions">
+        <span class="local-tag"><span class="status-dot"></span>仅在此 Mac</span>
+        <label class="theme-switch language-switch">
+          <span class="switch-name" aria-hidden="true">语言</span>
+          <select id="language-mode" aria-label="语言">
+            <option value="system">跟随系统</option>
+            <option value="zh">中文</option>
+            <option value="en">English</option>
+          </select>
+        </label>
+        <label class="theme-switch">
+          <span class="switch-name" aria-hidden="true">主题</span>
+          <select id="theme-mode" aria-label="外观主题">
+            <option value="system">跟随系统</option>
+            <option value="light">浅色</option>
+            <option value="dark">深色</option>
+          </select>
+        </label>
+        <a class="icon-button logs-link" href="/logs.html">实时日志</a>
+        <button class="icon-button" id="open-manual" type="button">工作历史</button>
+        <button class="icon-button" id="open-settings" type="button" aria-label="打开本机设置"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16M8 4v6M16 14v6"></path></svg><span>设置</span></button>
+      </div>
+    </header>
+
+    <main>
+      <section class="intro">
+        <div><p class="eyebrow">A CLEARER PICTURE OF YOUR TIME</p><h1>看见工作的真实成本</h1><p class="intro-copy">从公司 VPN 的连接状态开始，记录工作占用了多少生活。</p></div>
+        <div class="mode-switch" role="group" aria-label="数据模式">
+          <button type="button" data-mode="live" class="active" aria-pressed="true">本机记录</button>
+          <button type="button" data-mode="demo" aria-pressed="false">演示预览</button>
+        </div>
+      </section>
+
+      <section class="tracking-control" aria-labelledby="tracking-control-title">
+        <div class="tracking-control-copy">
+          <span class="tracking-control-kicker">计时控制</span>
+          <strong id="tracking-control-title" aria-live="polite">正在读取计时状态</strong>
+          <p id="tracking-control-hint">暂停自动计时后，VPN 状态仍会继续检测。</p>
+        </div>
+        <svg class="work-donkey" id="work-donkey" viewBox="0 0 150 78" aria-hidden="true" data-active="false" data-mood="neutral">
+          <ellipse cx="73" cy="70" rx="67" ry="3" fill="#8a7565" opacity=".15"/>
+          <g class="donkey-bob">
+            <path d="M22 57c-3-8-6-10-10-10 3 4 3 8 3 12" fill="none" stroke="#665c55" stroke-width="3" stroke-linecap="round"/>
+            <path d="M26 54c-1 8 1 14 5 14h7l1-16m28 0 2 16h8c3-3 2-10 1-15" fill="#948277" stroke="#5f554e" stroke-width="2.2" stroke-linejoin="round"/>
+            <path d="M20 43c0-13 10-19 27-19 18 0 29 7 29 19v10c-5 6-15 9-29 9-15 0-25-4-27-11z" fill="#b6a194" stroke="#5f554e" stroke-width="2.2"/>
+            <path d="M30 40c8 4 23 5 35 0" fill="none" stroke="#8d776a" stroke-width="1.5" opacity=".65"/>
+            <path d="M57 29c-3-9-5-19-2-24 5 1 10 12 11 20M70 24C70 14 73 5 77 4c4 5 3 16 1 25" fill="#a69083" stroke="#5f554e" stroke-width="2.2" stroke-linejoin="round"/>
+            <path d="M58 10c1 4 3 9 4 12M76 9c-1 4-1 9-1 13" fill="none" stroke="#dcaaa0" stroke-width="2" stroke-linecap="round"/>
+            <path d="M52 39c-1-12 6-18 17-18 12 0 19 8 18 19l-2 9c-2 6-8 9-16 8-10-1-16-7-17-18z" fill="#c4ada0" stroke="#5f554e" stroke-width="2.2"/>
+            <path d="M70 42c3-5 13-5 17-1 3 4 1 11-4 13-5 2-12 1-15-3-2-3-1-6 2-9z" fill="#e6cec0" stroke="#5f554e" stroke-width="2"/>
+            <path d="M76 48h2m5 0h2" stroke="#7b665d" stroke-width="1.6" stroke-linecap="round"/>
+            <g class="donkey-face-neutral" fill="none" stroke="#4c4541" stroke-width="2" stroke-linecap="round"><path d="M62 36h3m13 0h3"/><path d="M76 52h7"/></g>
+            <g class="donkey-face-work" fill="none" stroke="#4c4541" stroke-width="2" stroke-linecap="round"><path d="M61 34l6 2m10-1 5-1"/><path d="M62 39h4m12 0h4"/><path d="M75 53q4-4 9 0"/></g>
+            <path class="donkey-face-work" d="M89 27c-2.4 3-4.2 5.5-4.2 7.1a4.2 4.2 0 0 0 8.4 0c0-1.6-1.8-4.1-4.2-7.1z" fill="#8cc4d3" stroke="#527c8a" stroke-width="1"/>
+            <g class="donkey-face-rest" fill="none" stroke="#4c4541" stroke-width="2" stroke-linecap="round"><path d="M61 37q3-4 6 0m10 0q3-4 6 0"/><path d="M74 51q5 6 10 0"/></g>
+            <g class="donkey-face-rest" fill="#df9185" opacity=".75"><circle cx="60" cy="44" r="3"/><circle cx="85" cy="43" r="2.4"/></g>
+            <path class="donkey-hoof" d="M61 56c4 1 8 4 13 4l7-1" fill="none" stroke="#695a50" stroke-width="5" stroke-linecap="round"/>
+          </g>
+          <path d="M82 63h57M87 64v6m47-6v6" fill="none" stroke="#9e8a79" stroke-width="2.4" stroke-linecap="round"/>
+          <g class="donkey-work-props">
+            <path d="M91 38h32l-3 23H95z" fill="#d47c68" stroke="#935a4d" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M91 61h34" stroke="#935a4d" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="107" cy="50" r="2.3" fill="#f9e5d8"/>
+            <path d="M130 53h9v8c-1 3-8 3-9 0zM139 54h2c3 0 3 5-2 5" fill="#f2d3bd" stroke="#9d7768" stroke-width="1.5"/>
+            <path class="donkey-steam" d="M132 49c-3-3 3-4 1-7m4 7c-3-3 3-4 1-7" fill="none" stroke="#9d7768" stroke-width="1.5" stroke-linecap="round"/>
+          </g>
+          <g class="donkey-rest-props">
+            <g class="donkey-sparkle"><path d="M107 12v5m0 15v5M94 24h5m16 0h5m-22-9 4 4m10 10 4 4m0-18-4 4m-10 10-4 4" stroke="#e2ae4d" stroke-width="2.2" stroke-linecap="round"/><circle cx="107" cy="24" r="7" fill="#f4cd75"/></g>
+            <path d="M113 62V46m0 9q-7-7-11-4 3 5 11 6m0-2q7-7 11-4-3 5-11 6" fill="#a8c6a0" stroke="#6b9370" stroke-width="1.5"/>
+            <g fill="#efaa9d"><circle cx="113" cy="40" r="4"/><circle cx="108" cy="44" r="4"/><circle cx="118" cy="44" r="4"/><circle cx="110" cy="48" r="4"/><circle cx="116" cy="48" r="4"/></g><circle cx="113" cy="44" r="3" fill="#f8db86"/>
+          </g>
+        </svg>
+        <button class="tracking-action" id="manual-pause" type="button" disabled><span id="manual-pause-icon" class="tracking-action-icon" aria-hidden="true">Ⅱ</span><span id="manual-pause-label">暂停计时</span></button>
+      </section>
+
+      <div id="notice" class="notice" role="status" hidden></div>
+      <div id="error-banner" class="error-banner" role="alert" hidden></div>
+      <section id="screen-alert-panel" class="panel screen-alert-panel" aria-labelledby="screen-alert-title" hidden>
+        <div class="panel-heading"><div><p class="section-kicker">A MOMENT TO CHECK</p><h2 id="screen-alert-title">有些时段想请你确认</h2></div></div>
+        <p class="screen-alert-help">这些时段在生成提醒时，屏幕长时间休眠且 VPN 自动计时。修改规则或手动修正后，当前结果可能不同，请在工作历史中核对；系统不会自动扣除工时。</p>
+        <div id="screen-alert-list"></div>
+      </section>
+
+      <section class="toolbar" aria-label="查看时间范围">
+        <div class="period-tabs" role="group" aria-label="时间范围">
+          <button type="button" data-period="today" aria-pressed="false">今天</button>
+          <button type="button" data-period="week" class="active" aria-pressed="true">本周</button>
+          <button type="button" data-period="month" aria-pressed="false">本月</button>
+          <button type="button" data-period="quarter" aria-pressed="false">本季度</button>
+          <button type="button" data-period="half" aria-pressed="false">本半年</button>
+          <button type="button" data-period="year" aria-pressed="false">今年 YTD</button>
+          <button type="button" data-period="rolling_year" aria-pressed="false">过去一年</button>
+        </div>
+        <div class="toolbar-meta">
+          <span id="date-range" class="date-range">正在读取本机数据</span>
+          <div class="privacy-controls" role="group" aria-label="数据隐私显示">
+            <button class="icon-button privacy-toggle" id="privacy-toggle" type="button" aria-pressed="false" aria-label="隐藏薪资与时薪数字">隐藏数字</button>
+            <button class="icon-button privacy-toggle" id="privacy-time-toggle" type="button" aria-pressed="false" aria-label="隐藏工时与具体时段">隐藏时间</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="metrics" aria-label="时薪与工作时间">
+        <article class="metric-card actual-card">
+          <div class="card-top"><h2>实际时薪 <span class="small-pill" id="actual-source">VPN 口径</span></h2><span class="card-index">01</span></div>
+          <div class="rate-number"><span class="currency" id="actual-currency">$</span><span id="actual-rate">—</span><span class="rate-unit">/ 小时</span></div>
+          <div id="period-comparison" class="period-comparison" role="status" aria-label="与上一时段对比">
+            <div class="period-comparison-heading"><span id="period-comparison-title">与上期相比</span><strong id="period-comparison-change">—</strong></div>
+            <p id="period-comparison-prior" class="period-comparison-prior">正在读取上期数据…</p>
+            <p id="period-comparison-detail" class="period-comparison-detail"></p>
+          </div>
+          <div class="metric-bottom"><span class="theory-comparison"><span class="theory-comparison-label">与理论时薪相比</span><span id="rate-change" class="rate-change">等待记录</span></span><span id="actual-note">所选时段收入 ÷ 总工时</span></div>
+          <p id="actual-estimate-note" class="metric-footnote" hidden>按整日收入估算，今日随工时更新，缺失记录可能偏高。</p>
+        </article>
+        <article class="metric-card reference-card">
+          <div class="card-top"><h2>理论时薪</h2><span class="card-index">02</span></div>
+          <div class="rate-number"><span class="currency" id="theory-currency">$</span><span id="theory-rate">—</span><span class="rate-unit">/ 小时</span></div>
+          <p class="metric-bottom" id="theory-note">当前生效年薪 ÷ 本年理论工时</p>
+        </article>
+        <article class="metric-card hours-card">
+          <div class="card-top"><h2>工作占用</h2><span class="card-index">03</span></div>
+          <div class="rate-number"><span id="work-hours">—</span><span class="rate-unit" id="work-hours-unit">小时</span></div>
+          <div class="metric-bottom"><span>已记录日期</span><strong id="recorded-days">—</strong></div>
+        </article>
+      </section>
+
+      <section class="panel trend-panel" aria-labelledby="trend-title">
+        <div class="panel-heading">
+          <div><p class="section-kicker">DAY BY DAY</p><h2 id="trend-title">每日工时与时薪</h2></div>
+          <span id="trend-period" class="subtle-badge">所选时段</span>
+        </div>
+        <p id="trend-help" class="section-description">两条曲线按日期对齐，各自使用对应单位。空白表示缺少记录；点按图表或拖动日期滑块查看当天数据。</p>
+        <div class="chart-options"><div class="compact-switch" role="group" aria-label="纵轴范围"><button type="button" data-trend-scale="focus" class="active" aria-pressed="true">聚焦变化</button><button type="button" data-trend-scale="zero" aria-pressed="false">从零开始</button></div><p id="trend-scale-note" class="chart-option-note">纵轴按记录自动调整。</p></div>
+        <div id="trend-chart" class="trend-chart">
+          <svg id="daily-trend" role="img" aria-labelledby="trend-title trend-chart-description"></svg>
+          <p id="trend-empty" class="trend-empty" hidden>这个时段还没有可绘制的记录。</p>
+        </div>
+        <div class="trend-date-control"><label for="trend-date">查看日期 <output id="trend-selected-date" for="trend-date">—</output></label><input id="trend-date" type="range" min="0" max="0" step="1" value="0" aria-describedby="trend-help" disabled></div>
+        <div id="trend-detail" class="trend-detail" aria-live="polite">
+          <div><span>当日工时</span><strong id="trend-hours">—</strong></div>
+          <div><span>当日实际时薪</span><strong id="trend-rate">—</strong></div>
+          <p id="trend-day-note">正在读取每日记录…</p>
+        </div>
+        <p class="panel-footnote">实际时薪按当天固定日薪 ÷ 当天工时计算；有工时但不足 1 小时时按 1 小时估算，不改变记录的工时。非理论工作日不分配额外收入，有工时的单日实际时薪为 0；整周按总收入 ÷ 真实总工时计算。今日与记录不完整的日期会随补充记录变化；零工时或缺少薪资时，时薪留空。</p>
+      </section>
+
+      <section class="panel heatmap-panel" aria-labelledby="heatmap-title">
+        <div class="panel-heading">
+          <div><p class="section-kicker">YOUR DAYS AT A GLANCE</p><h2 id="heatmap-title">工作占用热力图 <span id="heatmap-year"></span></h2></div>
+          <div class="heatmap-legend" aria-label="颜色说明"><span>少</span><i class="level-0"></i><i class="level-1"></i><i class="level-2"></i><i class="level-3"></i><i class="level-4"></i><span>多</span><span class="legend-divider"></span><i class="unknown-swatch"></i><span>未知</span></div>
+        </div>
+        <p class="section-description">默认显示今天前后三个月。颜色表示当天合计工时，灰色斜纹表示缺少记录，淡灰色为未来日期；描边标出今天。</p>
+        <div class="heatmap-navigation"><div class="compact-switch" role="group" aria-label="热力图范围"><button type="button" data-heatmap-view="recent" class="active" aria-pressed="true">最近半年</button><button type="button" data-heatmap-view="year" aria-pressed="false">全年</button></div><span id="heatmap-range" class="heatmap-range"></span><button id="locate-latest-record" class="secondary-button" type="button" disabled>定位最近记录</button></div>
+        <p id="heatmap-scroll-hint" class="heatmap-scroll-hint" hidden>↔ 左右滑动查看前后三个月</p>
+        <div class="heatmap-scroll heatmap-recent" id="heatmap-scroll" aria-describedby="heatmap-scroll-hint heatmap-range">
+          <div class="heatmap-months" id="heatmap-months" aria-hidden="true"></div>
+          <div class="heatmap-body"><div class="weekday-labels" aria-hidden="true"><span>一</span><span></span><span>三</span><span></span><span>五</span><span></span><span>日</span></div><div class="heatmap-grid" id="heatmap" aria-label="全年工作时间，点击日期查看详情"></div></div>
+        </div>
+        <div class="heatmap-footer">
+          <p id="day-detail" aria-live="polite">选择一个日期，查看当天的工时来源、收入与实际时薪。</p>
+          <span class="future-note"><i></i> 尚未发生</span>
+        </div>
+      </section>
+
+      <div class="lower-grid">
+        <section class="panel timeline-panel" aria-labelledby="timeline-title">
+          <div class="panel-heading"><div><p class="section-kicker">FOLLOW THE SIGNAL</p><h2 id="timeline-title">最近的工作片段</h2></div><span class="subtle-badge">VPN / 手动记录 / 睡眠</span></div>
+          <div class="timeline" id="timeline"></div>
+          <p class="panel-footnote">没有操作电脑不会自动扣除时间。按天估算的手动记录没有具体时段，不显示为工作片段。</p>
+        </section>
+        <aside class="panel sync-panel" aria-labelledby="sync-title">
+          <div class="panel-heading"><div><p class="section-kicker">STAYS WITH YOU</p><h2 id="sync-title">记录留在本机</h2></div><svg class="privacy-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 7 3v6c0 4-7 9-7 9s-7-5-7-9V6l7-3Z"></path><path d="m8 12 3 3 5-6"></path></svg></div>
+          <div class="collector-state"><span id="collector-dot" class="status-dot muted"></span><strong id="collector-state">尚未启用采集</strong></div>
+          <p id="collector-message" class="collector-message">完成本机设置后，才会读取 VPN 连接状态。</p>
+          <p id="sleep-monitor-warning" class="sleep-monitor-warning" role="status" hidden></p>
+          <dl class="sync-details">
+            <div><dt>同步目的地</dt><dd>仅此 Mac</dd></div>
+            <div><dt>同步频率</dt><dd>每 1 分钟</dd></div>
+            <div><dt>最近同步</dt><dd id="last-sync">—</dd></div>
+            <div><dt>等待同步</dt><dd id="pending-count">0 条</dd></div>
+          </dl>
+          <button id="sync-now" class="secondary-button full-width" type="button">立即同步到本机仪表盘 <span aria-hidden="true">↗</span></button>
+          <p class="privacy-note">没有云端上传、第三方统计或外部字体。薪资与记录保存在本机。</p>
+          <div class="export-actions" role="group" aria-label="导出本机数据"><button id="export-sqlite" class="secondary-button" type="button">导出 SQLite 备份</button><button id="export-json" class="secondary-button" type="button">导出 JSON</button><button id="export-csv" class="secondary-button" type="button">导出每日 CSV</button></div>
+          <p class="field-hint">SQLite 和 JSON 含薪资、设置及原始记录，可用于恢复；CSV 是每日统计。请妥善保存导出文件。</p>
+          <details class="restore-details"><summary>从备份恢复</summary><p class="field-hint">恢复会替换本机记录，并先保存当前数据的回滚备份；恢复后需要重新启用采集。CSV 仅用于查看，不能用于恢复。</p><label>选择 JSON 或 SQLite 备份<input id="restore-file" type="file" accept=".json,.sqlite3,.sqlite,.db,application/json,application/vnd.sqlite3"></label><button id="restore-json" class="secondary-button" type="button">检查并恢复</button><p id="restore-status" class="field-hint" role="status"></p></details>
+          <details class="storage-details"><summary>查看保存位置与计算口径</summary><p id="storage-path"></p><p>理论时薪 = 当前生效年薪 ÷ 本年理论工作日数 ÷ 理论每日工时。理论每日工时默认 8 小时，仅用于理论时薪。</p><p>实际时薪 = 已记录日期的固定日薪累计收入 ÷ 同期工作小时（VPN 与手动记录合计），不限制开始或结束时间。理论工作日以外的日期（如周末）只累计工时，不增加固定收入，因此周末加班会降低整周实际时薪。</p><p>按整日收入估算，今日随工时更新，缺失记录可能偏高；零工时或相关日期缺少薪资时显示「—」。薪资按生效日期计算，修改后重新计算对应时段，理论工作日设置应用于全部历史记录。第一版专注 Mac 本机记录与查看；手机导入查看留待后续，目前不提供。</p><p>手动记录会注明来源。每日总时长替代过去一天的汇总工时；补充时段与 VPN 记录合并，修正时段替代所选范围的统计。修正今天时，截止时间之后继续自动记录。原始 VPN 记录保留，撤销修正可恢复。</p></details>
+        </aside>
+      </div>
+      <footer class="page-footer"><span>时间有边界，数据也有。</span><span>LOCAL FIRST <span class="footer-dot">·</span> MVP 01</span></footer>
+    </main>
+  </div>
+
+  <dialog id="settings-dialog" class="settings-dialog" aria-labelledby="settings-title">
+    <form id="settings-form">
+      <div class="dialog-heading"><div><p class="section-kicker">YOUR BASELINE</p><h2 id="settings-title">本机设置</h2></div><button id="close-settings" class="close-button" type="button" aria-label="关闭设置">×</button></div>
+      <p class="dialog-description">设置只保存在这台 Mac。演示数据不会写入真实记录。</p>
+      <p class="field-hint privacy-time-note">时间已隐藏；其他设置仍可保存。<button id="privacy-reveal-time-settings" class="secondary-button" type="button">显示时间并编辑</button></p>
+      <fieldset><legend>收入与理论工时</legend>
+        <p class="field-hint privacy-salary-note">数字已隐藏；其他设置仍可保存。<button id="privacy-reveal-settings" class="secondary-button" type="button">显示数字并编辑薪资</button></p>
+        <div id="salary-private-fields">
+        <div class="form-row"><label>初始年薪（此前适用）<input name="annual_salary" type="number" min="0.01" max="10000000000" step="0.01" placeholder="可留空" aria-describedby="salary-baseline-hint"></label><label class="currency-field">币种<select name="currency"><option value="USD">USD 美元</option><option value="CNY">CNY 人民币</option><option value="EUR">EUR 欧元</option><option value="GBP">GBP 英镑</option><option value="CAD">CAD 加元</option><option value="JPY">JPY 日元</option></select></label></div>
+        <p id="salary-baseline-hint" class="field-hint">初始年薪用于第一条生效日期之前；未添加变更时用于所有日期。留空表示此前薪资未知。</p>
+        <div class="salary-history-heading"><span class="field-label" id="salary-history-title">薪资变更</span><button id="add-salary-period" class="secondary-button" type="button">添加生效日期</button></div>
+        <div id="salary-history" role="group" aria-labelledby="salary-history-title"></div>
+        <p id="salary-history-empty" class="field-hint">还没有薪资变更，可在调薪或开始任职时添加。</p>
+        <p class="field-hint">每条年薪从所设时区的生效日期起，持续到下一条生效日期。所有时段使用同一币种，不做汇率换算；保存后会重新计算相关历史统计。</p>
+        </div>
+        <div class="privacy-time-field"><label>理论每日工时（小时）<input name="theoretical_daily_hours" type="number" min="0.25" max="24" step="0.25" value="8" required aria-describedby="theoretical-hours-hint"></label>
+        <p id="theoretical-hours-hint" class="field-hint">默认每天 8 小时，仅用于计算理论时薪。实际工时按记录与暂停规则计算，不受固定上下班时间限制。</p></div>
+        <label>时区<input name="timezone" type="text" required placeholder="America/Los_Angeles" autocomplete="off" spellcheck="false"></label>
+        <p class="field-hint">新安装自动识别系统时区，无法识别时使用 UTC。修改时区会重新划分历史日期。</p>
+        <span class="field-label">理论工作日</span>
+        <div class="workdays">
+          <label><input type="checkbox" name="workday" value="0"><span>一</span></label><label><input type="checkbox" name="workday" value="1"><span>二</span></label><label><input type="checkbox" name="workday" value="2"><span>三</span></label><label><input type="checkbox" name="workday" value="3"><span>四</span></label><label><input type="checkbox" name="workday" value="4"><span>五</span></label><label><input type="checkbox" name="workday" value="5"><span>六</span></label><label><input type="checkbox" name="workday" value="6"><span>日</span></label>
+        </div>
+        <p class="field-hint">以每年实际日历中的理论工作日分配固定日薪；未勾选的日期（如周末）只累计 VPN 工时，不增加固定收入。暂不单独扣除节假日。</p>
+      </fieldset>
+      <fieldset><legend>公司 VPN</legend>
+        <label>连接状态来源<select name="provider"><option value="" disabled hidden>无法识别的来源</option><option value="disabled">尚未配置</option><option value="script">本机状态脚本</option><option value="verified_system">需两态核对的系统 VPN</option><option value="system">macOS 系统 VPN</option><option value="cisco">Cisco Secure Client / AnyConnect</option></select></label>
+        <p id="provider-migration-warning" class="field-hint" role="status" hidden>当前状态来源无法识别。请先完成旧配置迁移，或选择并确认新的状态来源后再保存。</p>
+        <div id="script-status-field" class="verification-box" hidden>
+          <strong>读取本机脚本状态</strong>
+          <label>状态脚本绝对路径<input name="status_script_path" type="text" placeholder="例如 /Users/you/bin/work-status" autocomplete="off" spellcheck="false"></label>
+          <p class="field-hint">只运行你信任的脚本。脚本需输出 connected、disconnected 或 unknown；执行失败、超时或输出无效时按未知处理。路径修改后请先保存，再检查状态。</p>
+          <button id="check-script-status" class="secondary-button" type="button">检查已保存的脚本状态</button>
+          <p id="script-status-message" class="verification-progress" role="status">尚未检查。这里只读取状态，不检查内网是否可达，也不会连接或断开 VPN。</p>
+        </div>
+        <div id="service-id-field">
+          <label>系统 VPN 服务 UUID<input name="service_id" type="text" placeholder="仅系统 VPN 需要，填入已确认的服务 UUID" autocomplete="off" spellcheck="false"></label>
+          <button id="detect-vpn" class="secondary-button" type="button">检测本机 VPN</button>
+          <label id="detected-vpn-field" hidden>选择已检测的系统 VPN<select id="detected-vpn"><option value="">请选择</option></select></label>
+          <p id="vpn-detection-message" class="field-hint">仅在你点击检测后，读取本机已配置的系统 VPN 名称与服务编号。</p>
+        </div>
+        <div id="verified-system-verification" class="verification-box" hidden>
+          <strong>系统 VPN 的两态核对</strong>
+          <p class="field-hint">此来源需要两态核对，本机脚本不需要。请选择对应的系统服务；在日常连接或断开时分别核对，确认读取的是同一个连接。按钮只检查状态，不会改变 VPN 连接。</p>
+          <div class="verification-actions"><button id="verify-disconnected" class="secondary-button" type="button">VPN 已断开，核对状态</button><button id="verify-connected" class="secondary-button" type="button">VPN 已连接，核对状态</button></div>
+          <p id="verification-progress" class="verification-progress" role="status">尚未核对。完成连接与断开两种状态的核对后，才能启用计时。</p>
+          <p class="field-hint">服务名称不能证明它属于目标 VPN。若系统检测不到服务，当前适配便无法完成；不会根据进程或网卡存在来猜测连接状态。</p>
+        </div>
+        <p class="field-hint">需要确认客户端支持读取状态。无法确认时保留为未知，不猜测工作状态。</p>
+        <label class="tracking-toggle"><span><strong>启用本机 VPN 计时</strong><small>只读取连接状态；不读取屏幕、文件或消息。</small></span><input name="tracking_enabled" type="checkbox" role="switch"></label>
+        <label class="tracking-toggle sleep-toggle"><span><strong>睡眠期间暂停计时 · <span id="sleep-policy-status">已开启</span></strong><small>仅指整台 Mac 睡眠；熄屏、锁屏本身不会暂停。</small></span><input name="pause_on_sleep" type="checkbox" role="switch" checked aria-label="睡眠期间暂停计时" aria-describedby="sleep-policy-status sleep-policy-hint sleep-monitor-status"></label>
+        <p id="sleep-policy-hint" class="field-hint">开启后，系统睡眠期间不计入自动工时。</p>
+        <p class="field-hint">切换会重新计算已记录的睡眠时段，手动记录不受影响。唤醒后会自动恢复检测。</p>
+        <label class="tracking-toggle"><span><strong>夜间自动暂停计时</strong><small>保留 VPN 状态检测；到结束时间后自动恢复计入工时。</small></span><input name="night_pause_enabled" type="checkbox" role="switch"></label>
+        <div class="form-row night-pause-times privacy-time-field"><label>暂停开始<input name="night_pause_start" type="time" value="00:00" required></label><label>恢复计时<input name="night_pause_end" type="time" value="09:00" required></label></div>
+        <p class="field-hint">按所设时区每天生效，支持跨午夜。修改后会重算历史；原始 VPN 记录保留，手动记录优先。</p>
+        <p id="sleep-monitor-status" class="field-hint sleep-monitor-status" role="status">正在读取睡眠识别状态…</p>
+        <label class="tracking-toggle"><span><strong>熄屏过久时提醒确认</strong><small>屏幕休眠且 VPN 仍在计时达到阈值时提醒；不会自动扣除工时。</small></span><input name="screen_alert_enabled" type="checkbox" role="switch" checked aria-describedby="screen-alert-settings-hint"></label>
+        <label class="privacy-time-field">连续熄屏提醒阈值（小时）<input name="screen_alert_hours" type="number" min="1" max="24" step="0.25" value="4" required aria-describedby="screen-alert-settings-hint"></label>
+        <p id="screen-alert-settings-hint" class="field-hint">默认 4 小时，可设置 1–24 小时。夜间暂停、手动暂停、整机睡眠或 VPN 状态未知会中断这段时间。</p>
+        <p id="screen-monitor-status" class="field-hint" role="status">正在读取屏幕状态检测…</p>
+        <p class="field-hint">公司设备是否允许运行此工具，仍需按公司的规定确认。开启后，保持本机服务运行才能持续记录。</p>
+      </fieldset>
+      <fieldset><legend>启动与后台运行</legend>
+        <label class="tracking-toggle"><span><strong>登录后自动启动 · <span id="autostart-label">读取中</span></strong><small>登录此 Mac 账户后在后台启动，不会自动打开浏览器。</small></span><input id="autostart-enabled" type="checkbox" role="switch" disabled aria-label="登录后自动启动" aria-describedby="autostart-status"></label>
+        <p id="autostart-status" class="field-hint" role="status">正在读取启动状态…</p>
+        <p class="field-hint">此开关立即生效，与下方“保存设置”分开；是否计时仍由 VPN 计时及暂停规则决定。</p>
+      </fieldset>
+      <fieldset><legend>浏览器授权</legend>
+        <p class="field-hint">本页只管理当前浏览器的授权。授权后，14 天内重启服务无需再次授权；可在到期前手动延长。</p>
+        <p class="field-hint">其他浏览器需要分别通过本机启动入口打开并授权；浏览器数据清除或授权过期后，也需重新打开入口。</p>
+        <button id="extend-browser-auth" class="secondary-button" type="button" disabled>延长此浏览器授权</button>
+        <button id="revoke-browser-auth" class="secondary-button" type="button">撤销所有浏览器授权</button>
+        <p id="browser-auth-status" class="field-hint" role="status">正在读取此浏览器授权状态…</p>
+      </fieldset>
+      <p id="form-error" class="form-error" role="alert" hidden></p>
+      <div class="dialog-footer"><button id="cancel-settings" class="secondary-button" type="button">取消</button><button id="save-settings" class="primary-button" type="submit">保存设置</button></div>
+    </form>
+  </dialog>
+  <dialog id="manual-dialog" class="settings-dialog manual-dialog" aria-labelledby="manual-title">
+    <form id="manual-form">
+      <div class="dialog-heading"><div><p class="section-kicker">YOUR WORK HISTORY</p><h2 id="manual-title">工作历史</h2></div><button id="close-manual" class="close-button" type="button" aria-label="关闭工作历史">×</button></div>
+      <p class="dialog-description">选择日期查看工作记录，也可以添加或修改手动记录。可以填写多个时段，或记录过去一天的总小时。</p>
+      <p id="manual-loading" class="field-hint" role="status" hidden>正在读取本机工作历史…</p>
+      <div class="manual-workspace">
+        <section class="manual-calendar" aria-label="工作历史日历">
+          <div class="manual-calendar-heading"><button id="manual-prev-month" type="button" class="secondary-button" aria-label="工作历史日历上个月">‹</button><h3 id="manual-month-label" aria-live="polite">选择日期</h3><button id="manual-next-month" type="button" class="secondary-button" aria-label="工作历史日历下个月">›</button></div>
+          <div class="manual-weekdays" aria-hidden="true"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
+          <div id="manual-calendar-days" class="manual-calendar-days" role="group" aria-labelledby="manual-month-label"></div>
+          <div class="heatmap-legend" aria-label="工时颜色与热力图一致：由少到多，斜纹表示未知"><span>少</span><i class="level-0"></i><i class="level-1"></i><i class="level-2"></i><i class="level-3"></i><i class="level-4"></i><span>多</span><span class="legend-divider"></span><i class="unknown-swatch"></i><span>未知</span></div>
+          <div class="manual-calendar-footer"><span><i></i> 已有手动记录</span><button id="manual-today" type="button" class="secondary-button">回到今天</button></div>
+          <label class="manual-date-jump">跳转到日期<input name="date" type="date" required></label>
+        </section>
+        <section class="manual-editor" aria-labelledby="manual-selected-label">
+          <div class="manual-editor-heading"><h3 id="manual-selected-label">当天工作记录</h3><span id="manual-draft-state" role="status">未保存预览</span></div>
+          <section id="history-segments" class="history-segments" aria-label="当天记录分段" aria-live="polite"><p>正在读取当天分段…</p></section>
+          <label>记录方式<select name="kind"><option value="intervals_override">修正已记录的工作时段</option><option value="intervals">补充工作时段（与自动记录合并）</option><option value="daily_total">我只记得总小时（过去日期）</option></select></label>
+          <p id="manual-date-hint" class="field-hint">按本机设置的时区填写。</p>
+          <div id="manual-hours-field" hidden><label>当天总时长（小时）<input name="hours" type="number" min="0" max="24" step="0.25" value="11" disabled></label><div class="manual-hour-presets" role="group" aria-label="快捷填写总小时"><button type="button" class="secondary-button" data-manual-hours="8">8 小时</button><button type="button" class="secondary-button" data-manual-hours="10">10 小时</button><button type="button" class="secondary-button" data-manual-hours="11">11 小时</button><button type="button" class="secondary-button" data-manual-hours="12">12 小时</button></div></div>
+          <div id="manual-intervals-field"><div id="manual-interval-rows" class="manual-interval-rows"></div><button id="manual-add-interval" type="button" class="secondary-button">＋ 添加一段工作</button><p class="field-hint manual-time-help">可从中点拆分后调整时间，也可合并下一段；保存后生效。24 小时制，结束选 24:00 表示当天结束；跨午夜的工作请分两天记录。</p></div>
+          <button id="manual-copy-previous" type="button" class="manual-copy-button">沿用之前的手动记录</button>
+          <div class="manual-preview" aria-label="手动记录预览"><div class="manual-preview-heading"><span>这次填写的时长</span><strong id="manual-preview-total">—</strong></div><div id="manual-time-preview"><div class="manual-day-axis" aria-hidden="true"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div><div id="manual-time-track" class="manual-time-track" role="img" aria-label="24 小时工作时段预览"></div></div><p id="manual-preview-note" class="field-hint" aria-live="polite">仅预览，保存后生效。</p></div>
+          <label>备注（可选）<input name="note" type="text" maxlength="500" placeholder="例如：根据记忆估算，或补记晚间工作"></label>
+        </section>
+      </div>
+      <p id="manual-error" class="form-error" role="alert" hidden></p>
+      <div class="dialog-footer"><button id="cancel-manual" class="secondary-button" type="button">取消</button><button id="save-manual" class="primary-button" type="submit">保存记录</button></div>
+      <details class="manual-history">
+        <summary id="manual-history-title">查看已有手动记录</summary>
+        <div class="manual-history-heading"><h3>已有手动记录</h3><button id="new-manual" class="secondary-button" type="button">编辑今天</button></div>
+        <p id="manual-empty" class="field-hint">尚无手动记录。</p>
+        <div id="manual-list"></div>
+      </details>
+    </form>
+  </dialog>
+  <div id="toast" class="toast" role="status" hidden></div>
+</body>
+</html>
